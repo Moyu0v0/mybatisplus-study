@@ -26,5 +26,5 @@ public class UserVO {
     private Integer balance;
 
     @ApiModelProperty("地址")
-    private List<AddressVO> address;
+    private List<AddressVO> addresses;
 }

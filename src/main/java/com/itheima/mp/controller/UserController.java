@@ -71,8 +71,7 @@ public class UserController {
     @GetMapping
     @ApiOperation("根据id批量查询用户")
     public List<UserVO> queryUsersByIds(@ApiParam("用户id集合") @RequestParam("ids") List<Long> ids) {
-        List<UserPO> users = userService.listByIds(ids);
-        return BeanUtil.copyToList(users, UserVO.class);
+        return userService.queryUsersByIds(ids);
     }
 
     /**

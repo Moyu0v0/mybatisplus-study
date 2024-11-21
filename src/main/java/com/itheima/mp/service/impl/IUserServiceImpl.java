@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * IUserServiceImpl
@@ -70,15 +71,46 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
             throw new RuntimeException("用户状态异常！");
         }
         // 2. 查地址
-        List<AddressPO> list = Db.lambdaQuery(AddressPO.class)
+        List<AddressPO> addresses = Db.lambdaQuery(AddressPO.class) // Db静态工具可以避免service的相互依赖
                 .eq(AddressPO::getUserId, id)
                 .list();
         // 3. 包装并返回
         UserVO userVO = BeanUtil.copyProperties(user, UserVO.class);
-        if (CollUtil.isNotEmpty(list)) {
-            userVO.setAddress(BeanUtil.copyToList(list, AddressVO.class));
+        if (CollUtil.isNotEmpty(addresses)) {
+            userVO.setAddresses(BeanUtil.copyToList(addresses, AddressVO.class));
         }
         return userVO;
+    }
+
+    @Override
+    public List<UserVO> queryUsersByIds(List<Long> ids) {
+        // 1. 查用户
+        List<UserPO> userPOList = listByIds(ids);
+        if (CollUtil.isEmpty(userPOList)) {
+            return Collections.emptyList();
+        }
+        // 2. 获取合法的用户id集合
+        List<Long> userIds = userPOList.stream().map(UserPO::getId).collect(Collectors.toList());
+        // 3. 查所有用户的地址（在这里使用 in 关键字查询而不是在循环中依次查询的好处是：只需要查数据库一次）
+        List<AddressPO> addressPOList = Db.lambdaQuery(AddressPO.class).in(AddressPO::getUserId, userIds).list();
+        // 4. 转换地址VO
+        List<AddressVO> addressVOList = BeanUtil.copyToList(addressPOList, AddressVO.class);
+        // 5. 用户地址集合分类处理：相同用户的地址放入同一个集合中
+        Map<Long, List<AddressVO>> addressMap = new HashMap<>();
+        if (CollUtil.isNotEmpty(addressVOList)) {
+            addressMap = addressVOList.stream().collect(Collectors.groupingBy(AddressVO::getUserId));
+        }
+        // 6. 包装并返回
+        List<UserVO> userVOList = new ArrayList<>(userPOList.size());
+        for (UserPO userPO : userPOList) {
+            // 6.1 将用户PO转VO
+            UserVO userVO = BeanUtil.copyProperties(userPO, UserVO.class);
+            // 6.2 设置用户VO的地址VO
+            userVO.setAddresses(addressMap.get(userVO.getId()));
+            // 6.3 将单个用户加入集合
+            userVOList.add(userVO);
+        }
+        return userVOList;
     }
 }
 
