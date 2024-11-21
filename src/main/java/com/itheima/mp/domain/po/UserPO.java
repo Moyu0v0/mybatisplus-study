@@ -1,12 +1,14 @@
 package com.itheima.mp.domain.po;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class User {
+@TableName("user")
+public class UserPO {
 
     /**
      * 用户id

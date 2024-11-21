@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.itheima.mp.mapper.UserMapper">
-    <insert id="saveUser" parameterType="com.itheima.mp.domain.po.User">
+    <insert id="saveUser" parameterType="com.itheima.mp.domain.po.UserPO">
         INSERT INTO `user` (`id`, `username`, `password`, `phone`, `info`, `balance`)
         VALUES
         (#{id}, #{username}, #{password}, #{phone}, #{info}, #{balance});
     </insert>
-    <update id="updateUser" parameterType="com.itheima.mp.domain.po.User">
+    <update id="updateUser" parameterType="com.itheima.mp.domain.po.UserPO">
         UPDATE `user`
         <set>
             <if test="username != null">
@@ -30,17 +30,17 @@
         </set>
         WHERE `id`=#{id};
     </update>
-    <delete id="deleteUser" parameterType="com.itheima.mp.domain.po.User">
+    <delete id="deleteUser" parameterType="com.itheima.mp.domain.po.UserPO">
         DELETE FROM user WHERE id = #{id}
     </delete>
 
-    <select id="queryUserById" resultType="com.itheima.mp.domain.po.User">
+    <select id="queryUserById" resultType="com.itheima.mp.domain.po.UserPO">
         SELECT *
         FROM user
         WHERE id = #{id}
     </select>
 
-    <select id="queryUserByIds" resultType="com.itheima.mp.domain.po.User">
+    <select id="queryUserByIds" resultType="com.itheima.mp.domain.po.UserPO">
         SELECT *
         FROM user
         <if test="ids != null">

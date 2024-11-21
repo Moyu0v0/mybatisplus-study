@@ -2,7 +2,7 @@ package com.itheima.mp.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.itheima.mp.domain.dto.UserFormDTO;
-import com.itheima.mp.domain.po.User;
+import com.itheima.mp.domain.po.UserPO;
 import com.itheima.mp.domain.query.UserQuery;
 import com.itheima.mp.domain.vo.UserVO;
 import com.itheima.mp.service.IUserService;
@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping
     @ApiOperation("新增用户")
     public void addUser(@ApiParam("用户表单实体") @RequestBody UserFormDTO userFormDTO) {
-        User user = BeanUtil.copyProperties(userFormDTO, User.class);
+        UserPO user = BeanUtil.copyProperties(userFormDTO, UserPO.class);
         userService.save(user);
     }
 
@@ -59,8 +59,7 @@ public class UserController {
     @GetMapping("/{id}")
     @ApiOperation("根据id查询用户")
     public UserVO queryUserById(@ApiParam("用户id") @PathVariable("id") Long id) {
-        User user = userService.getById(id);
-        return BeanUtil.copyProperties(user, UserVO.class);
+        return userService.queryUserById(id);
     }
 
     /**
@@ -72,7 +71,7 @@ public class UserController {
     @GetMapping
     @ApiOperation("根据id批量查询用户")
     public List<UserVO> queryUsersByIds(@ApiParam("用户id集合") @RequestParam("ids") List<Long> ids) {
-        List<User> users = userService.listByIds(ids);
+        List<UserPO> users = userService.listByIds(ids);
         return BeanUtil.copyToList(users, UserVO.class);
     }
 
@@ -99,7 +98,7 @@ public class UserController {
     @GetMapping("/list")
     @ApiOperation("根据复杂条件查询用户")
     public List<UserVO> queryUsers(UserQuery query) {
-        List<User> users = userService.queryUsers(
+        List<UserPO> users = userService.queryUsers(
                 query.getName(),
                 query.getStatus(),
                 query.getMinBalance(),

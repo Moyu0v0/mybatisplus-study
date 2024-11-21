@@ -1,6 +1,6 @@
 package com.itheima.mp.mapper;
 
-import com.itheima.mp.domain.po.User;
+import com.itheima.mp.domain.po.UserPO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +16,7 @@ class UserMapperTest {
 
     @Test
     void testInsert() {
-        User user = new User();
+        UserPO user = new UserPO();
         // user.setId(5L);
         user.setUsername("Lucy");
         user.setPassword("123");
@@ -32,7 +32,7 @@ class UserMapperTest {
     @Test
     void testSelectById() {
         // User user = userMapper.queryUserById(5L);
-        User user1 = userMapper.selectById(5L);
+        UserPO user1 = userMapper.selectById(5L);
         System.out.println("user = " + user1);
     }
 
@@ -40,14 +40,14 @@ class UserMapperTest {
     @Test
     void testQueryByIds() {
         // List<User> users = userMapper.queryUserByIds(List.of(1L, 2L, 3L, 4L));
-        List<User> users = userMapper.selectBatchIds(List.of(1L, 2L, 3L, 4L));
+        List<UserPO> users = userMapper.selectBatchIds(List.of(1L, 2L, 3L, 4L));
         users.forEach(System.out::println);
 
     }
 
     @Test
     void testUpdateById() {
-        User user = new User();
+        UserPO user = new UserPO();
         user.setId(5L);
         user.setBalance(20000);
         userMapper.updateById(user);
