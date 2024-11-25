@@ -42,7 +42,6 @@ class UserMapperTest {
         // List<User> users = userMapper.queryUserByIds(List.of(1L, 2L, 3L, 4L));
         List<UserPO> users = userMapper.selectBatchIds(List.of(1L, 2L, 3L, 4L));
         users.forEach(System.out::println);
-
     }
 
     @Test
