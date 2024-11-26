@@ -71,7 +71,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
             throw new RuntimeException("用户状态异常！");
         }
         // 2. 查地址
-        List<AddressPO> addresses = Db.lambdaQuery(AddressPO.class) // Db静态工具可以避免service的相互依赖
+        List<AddressPO> addresses = Db.lambdaQuery(AddressPO.class) // 使用Db静态工具可以避免service的相互依赖
                 .eq(AddressPO::getUserId, id)
                 .list();
         // 3. 包装并返回
