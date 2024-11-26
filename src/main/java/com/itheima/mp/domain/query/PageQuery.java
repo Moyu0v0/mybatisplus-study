@@ -2,17 +2,31 @@ package com.itheima.mp.domain.query;
 
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@ApiModel(description = "分页查询条件实体")
 public class PageQuery {
-    private Integer pageNo;
-    private Integer pageSize;
+    @ApiModelProperty("页码，默认为1")
+    private Integer pageNo = 1;
+
+    @ApiModelProperty("页面大小，默认为5")
+    private Integer pageSize = 5;
+
+    @ApiModelProperty("排序字段")
     private String sortBy;
-    private Boolean isAsc;
+
+    @ApiModelProperty("是否升序，默认为否")
+    private Boolean isAsc = false;
 
     public <T> Page<T> toMpPageDefaultSortByCreateTimeDesc() {
         return toMpPage("create_time", false);
+    }
+
+    public <T> Page<T> toMpPageDefaultSortByUpdateTimeDesc() {
+        return toMpPage("update_time", false);
     }
 
     public <T> Page<T> toMpPage(String defaultSortBy, boolean isAsc) {
@@ -33,9 +47,5 @@ public class PageQuery {
             p.addOrder(orders);
         }
         return p;
-    }
-
-    public <T> Page<T> toMpPageDefaultSortByUpdateTimeDesc() {
-        return toMpPage("update_time", false);
     }
 }

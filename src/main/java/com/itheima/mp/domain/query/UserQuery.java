@@ -3,10 +3,13 @@ package com.itheima.mp.domain.query;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+// 当子类需要继承父类的某些字段，并且这些字段在 equals 和 hashCode 方法中也需要考虑时，可以使用 callSuper = true
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel(description = "用户查询条件实体")
-public class UserQuery {
+public class UserQuery extends PageQuery {
     @ApiModelProperty("用户名关键字")
     private String name;
 

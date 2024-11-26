@@ -2,10 +2,13 @@ package com.itheima.mp.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import com.itheima.mp.domain.dto.PageDTO;
 import com.itheima.mp.domain.po.AddressPO;
 import com.itheima.mp.domain.po.UserPO;
+import com.itheima.mp.domain.query.UserQuery;
 import com.itheima.mp.domain.vo.AddressVO;
 import com.itheima.mp.domain.vo.UserVO;
 import com.itheima.mp.enums.UserStatus;
@@ -54,20 +57,9 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
                 .update(); // 别忘了最后加上update()，否则不执行
     }
 
-    // todo 查询地址
-    @Override
-    public List<UserPO> queryUsers(String name, UserStatus status, Integer minBalance, Integer maxBalance) {
-        return lambdaQuery()
-                .like(name != null, UserPO::getUsername, name)
-                .eq(status != null, UserPO::getStatus, status)
-                .ge(minBalance != null, UserPO::getBalance, minBalance)
-                .le(maxBalance != null, UserPO::getBalance, maxBalance)
-                .list();
-    }
-
     @Override
     public UserVO queryUserById(Long id) {
-        // 1，查用户
+        // 1. 查用户
         UserPO user = getById(id);
         if (user == null || user.getStatus() == UserStatus.FROZEN) {
             throw new RuntimeException("用户状态异常！");
@@ -113,6 +105,47 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
             userVOList.add(userVO);
         }
         return userVOList;
+    }
+
+    // todo 查询地址并放入结果
+    @Override
+    public List<UserPO> queryUsers(String name, UserStatus status, Integer minBalance, Integer maxBalance) {
+        return lambdaQuery()
+                .like(name != null, UserPO::getUsername, name)
+                .eq(status != null, UserPO::getStatus, status)
+                .ge(minBalance != null, UserPO::getBalance, minBalance)
+                .le(maxBalance != null, UserPO::getBalance, maxBalance)
+                .list();
+    }
+
+    // todo 查询地址并放入结果
+    @Override
+    public PageDTO<UserVO> queryUsersPage(UserQuery query) {
+        // 1. 构造查询条件
+        String name = query.getName();
+        Integer status = query.getStatus();
+        Integer minBalance = query.getMinBalance();
+        Integer maxBalance = query.getMaxBalance();
+        // 1.1 分页条件
+        Page<UserPO> page = query.toMpPageDefaultSortByUpdateTimeDesc();
+        // 2. 查询
+        Page<UserPO> p = lambdaQuery()
+                .like(name != null, UserPO::getUsername, name)
+                .eq(status != null, UserPO::getStatus, status)
+                .ge(minBalance != null, UserPO::getBalance, minBalance)
+                .le(maxBalance != null, UserPO::getBalance, maxBalance)
+                .page(page);
+        // 3. 封装VO结果返回
+        // return PageDTO.of(p, UserVO.class);
+        // 3. 封装VO结果返回（自定义PO到VO的映射）
+        return PageDTO.of(p, userPO -> {
+            // 1. 先拷贝基础属性
+            UserVO userVO = BeanUtil.copyProperties(userPO, UserVO.class);
+            // 2. 特殊逻辑处理（例如用户名脱敏）
+            userVO.setUsername(userVO.getUsername().substring(0, userVO.getUsername().length() - 2) + "**");
+            // 3. 返回VO
+            return userVO;
+        });
     }
 }
 
