@@ -22,6 +22,9 @@ mybatis-plus:
       id-type: auto # 全局id类型为自增长
       logic-delete-value: 1 # 逻辑已删除值
       logic-not-delete-value: 0 # 逻辑未删除值
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+
 #swagger配置
 knife4j:
   enable: true

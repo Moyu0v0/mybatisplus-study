@@ -3,6 +3,7 @@ package com.itheima.mp.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.itheima.mp.domain.po.UserPO;
 import com.itheima.mp.domain.vo.UserVO;
+import com.itheima.mp.enums.UserStatus;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface IUserService extends IService<UserPO> {
      * @param maxBalance 最大余额
      * @return {@link List }<{@link UserPO }>
      */
-    List<UserPO> queryUsers(String name, Integer status, Integer minBalance, Integer maxBalance);
+    List<UserPO> queryUsers(String name, UserStatus status, Integer minBalance, Integer maxBalance);
 
     /**
      * 根据id查询用户

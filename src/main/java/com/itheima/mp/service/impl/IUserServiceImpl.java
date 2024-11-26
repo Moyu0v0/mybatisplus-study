@@ -8,6 +8,7 @@ import com.itheima.mp.domain.po.AddressPO;
 import com.itheima.mp.domain.po.UserPO;
 import com.itheima.mp.domain.vo.AddressVO;
 import com.itheima.mp.domain.vo.UserVO;
+import com.itheima.mp.enums.UserStatus;
 import com.itheima.mp.mapper.UserMapper;
 import com.itheima.mp.service.IUserService;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
         // 1. 查询用户
         UserPO user = getById(id);
         // 2. 校验用户状态
-        if (user == null || user.getStatus() == 2) {
+        if (user == null || user.getStatus() == UserStatus.FROZEN) {
             throw new RuntimeException("用户状态异常！");
         }
         // 3. 校验余额是否充足
@@ -47,14 +48,15 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
         int remainBalance = user.getBalance() - money;
         lambdaUpdate()
                 .set(UserPO::getBalance, remainBalance)
-                .set(remainBalance == 0, UserPO::getStatus, 2) // 这里应该避免魔法值
+                .set(remainBalance == 0, UserPO::getStatus, UserStatus.FROZEN) // 这里应该避免魔法值
                 .eq(UserPO::getId, id)
                 .eq(UserPO::getBalance, user.getBalance()) // 乐观锁：先比较后更新
                 .update(); // 别忘了最后加上update()，否则不执行
     }
 
+    // todo 查询地址
     @Override
-    public List<UserPO> queryUsers(String name, Integer status, Integer minBalance, Integer maxBalance) {
+    public List<UserPO> queryUsers(String name, UserStatus status, Integer minBalance, Integer maxBalance) {
         return lambdaQuery()
                 .like(name != null, UserPO::getUsername, name)
                 .eq(status != null, UserPO::getStatus, status)
@@ -67,7 +69,7 @@ public class IUserServiceImpl extends ServiceImpl<UserMapper, UserPO> implements
     public UserVO queryUserById(Long id) {
         // 1，查用户
         UserPO user = getById(id);
-        if (user == null || user.getStatus() == 2) {
+        if (user == null || user.getStatus() == UserStatus.FROZEN) {
             throw new RuntimeException("用户状态异常！");
         }
         // 2. 查地址

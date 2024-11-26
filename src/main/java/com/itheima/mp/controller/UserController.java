@@ -5,6 +5,7 @@ import com.itheima.mp.domain.dto.UserFormDTO;
 import com.itheima.mp.domain.po.UserPO;
 import com.itheima.mp.domain.query.UserQuery;
 import com.itheima.mp.domain.vo.UserVO;
+import com.itheima.mp.enums.UserStatus;
 import com.itheima.mp.service.IUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -99,7 +100,7 @@ public class UserController {
     public List<UserVO> queryUsers(UserQuery query) {
         List<UserPO> users = userService.queryUsers(
                 query.getName(),
-                query.getStatus(),
+                UserStatus.getEnumByValue(query.getStatus()),
                 query.getMinBalance(),
                 query.getMaxBalance());
         return BeanUtil.copyToList(users, UserVO.class);
